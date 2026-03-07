@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import { decrypt } from '@/lib/utils/encryption'
 import { getSpotifyPlaylistTracks } from './spotify'
 import { createYouTubePlaylist, searchYouTubeVideo, addVideoToYouTubePlaylist } from './youtube'
+import { sendTransferCompleteEmail } from '@/lib/resend'
 
 // Note: In Serverless functions on standard Vercel plans, this background process may timeout after 15 seconds.
 // For true production use-cases, wrap this inside an Inngest / Vercel In-Background context, or deploy the API on Edge/Custom Servers.
@@ -123,6 +124,20 @@ export async function processTransferJob(jobId: string) {
       failed_tracks: failed,
       completed_at: new Date().toISOString()
     }).eq('id', jobId)
+
+    // 7. Fire Transactional Email!
+    const { data: profile } = await supabase.from('user_profiles').select('email, full_name').eq('id', userId).single()
+    
+    if (profile?.email) {
+      await sendTransferCompleteEmail({
+         toEmail: profile.email,
+         userName: profile.full_name || 'Music Lover',
+         sourcePlaylist: job.source_playlist_name,
+         targetPlatform: job.target_platform,
+         totalTracks: tracks.length,
+         failedTracks: failed
+      })
+    }
 
   } catch (globalError: any) {
     console.error(`[Transfer] Global crash on job ${jobId}: ${globalError}`)
