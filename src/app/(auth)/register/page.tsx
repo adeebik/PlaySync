@@ -55,9 +55,9 @@ export default function RegisterPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Button asChild className="w-full">
-            <Link href="/login">Return to Login</Link>
-          </Button>
+          <Link href="/login" className="w-full flex">
+             <Button className="w-full">Return to Login</Button>
+          </Link>
         </CardContent>
       </Card>
     )
