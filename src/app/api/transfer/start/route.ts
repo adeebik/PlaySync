@@ -25,6 +25,44 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Currently, only Spotify -> YouTube transfers are supported.' }, { status: 400 })
     }
 
+    const playlistTrackCount = await request.json().then(data => data.tracksCount || 0).catch(() => 0)
+
+    // --- PAYWALL LOGIC ---
+    // 1. Check if the user has an active Pro subscription
+    const { data: subscription } = await supabase
+      .from('subscriptions')
+      .select('status, plan')
+      .eq('user_id', session.user.id)
+      .single()
+
+    const isPro = subscription?.status === 'active' && subscription?.plan === 'pro'
+
+    if (!isPro) {
+      // 2. Calculate total historical cloned tracks across all past successful jobs
+      const { data: pastJobs, error: pastJobsError } = await supabase
+        .from('transfer_jobs')
+        .select('total_tracks')
+        .eq('user_id', session.user.id)
+        .in('status', ['completed', 'processing', 'pending'])
+
+      if (pastJobsError) {
+        throw new Error('Could not verify historical transfer limits')
+      }
+
+      const totalHistoricalTracks = pastJobs.reduce((sum, job) => sum + (job.total_tracks || 0), 0)
+      
+      const FREE_TIER_LIMIT = 100
+
+      // 3. Block if they have hit the 100 song clone limit
+      if (totalHistoricalTracks >= FREE_TIER_LIMIT) {
+        return NextResponse.json({ 
+           error: `Free tier limit reached! You have transferred ${totalHistoricalTracks} tracks. Please upgrade to Pro for unlimited transfers.`,
+           code: 'UPGRADE_REQUIRED'
+        }, { status: 402 }) // 402 Payment Required
+      }
+    }
+    // --- END PAYWALL LOGIC ---
+
     // 1. Initialize the Pending Job inside Supabase
     const { data: job, error: dbError } = await supabase
       .from('transfer_jobs')

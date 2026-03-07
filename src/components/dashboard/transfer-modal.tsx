@@ -38,13 +38,18 @@ export function TransferModal({ playlist, isOpen, onClose, isSpotifyConnected, i
           sourcePlatform: playlist.platform,
           targetPlatform: targetPlatform,
           sourcePlaylistId: playlist.id,
-          sourcePlaylistName: playlist.name
+          sourcePlaylistName: playlist.name,
+          tracksCount: playlist.tracksCount
         })
       })
 
       const data = await response.json()
 
       if (!response.ok) {
+        if (data.code === 'UPGRADE_REQUIRED') {
+           setError(`PAYWALL: ${data.error}`)
+           throw new Error(data.error)
+        }
         throw new Error(data.error || 'Failed to start transfer')
       }
 
@@ -96,7 +101,14 @@ export function TransferModal({ playlist, isOpen, onClose, isSpotifyConnected, i
 
         {error && (
           <Alert variant="destructive" className="mb-4">
-            <AlertDescription>{error}</AlertDescription>
+            <AlertDescription className="flex flex-col gap-2">
+               {error.startsWith('PAYWALL: ') ? error.replace('PAYWALL: ', '') : error}
+               {error.startsWith('PAYWALL: ') && (
+                 <Button variant="outline" size="sm" className="w-fit mt-1 border-red-200 hover:bg-red-50" onClick={() => router.push('/pricing')}>
+                   View Pricing Plans
+                 </Button>
+               )}
+            </AlertDescription>
           </Alert>
         )}
 
