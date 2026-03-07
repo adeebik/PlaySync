@@ -153,8 +153,90 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* Pricing Section */}
+        <section id="pricing" className="w-full py-24 bg-white">
+          <div className="container px-4 md:px-6 mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-4">Simple, transparent pricing</h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">Choose the plan that fits your library. Upgrade at any time.</p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              {/* Free Tier */}
+              <Card className="flex flex-col border-gray-200 shadow-sm bg-white">
+                <div className="p-8 pb-0">
+                  <h3 className="text-2xl font-bold">Free</h3>
+                  <p className="text-gray-500 text-sm mt-1">Perfect for testing the waters.</p>
+                  <div className="mt-4">
+                    <span className="text-4xl font-extrabold text-gray-900">$0</span>
+                    <span className="text-gray-500 font-medium">/month</span>
+                  </div>
+                </div>
+                <CardContent className="p-8 flex-1">
+                  <ul className="space-y-4">
+                    <li className="flex items-start">
+                      <CheckCircle2 className="w-5 h-5 text-green-500 mr-2 shrink-0 mt-0.5" />
+                      <span className="text-gray-600">Up to 100 tracks total</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle2 className="w-5 h-5 text-green-500 mr-2 shrink-0 mt-0.5" />
+                      <span className="text-gray-600">Standard matching algorithm</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle2 className="w-5 h-5 text-green-500 mr-2 shrink-0 mt-0.5" />
+                      <span className="text-gray-600">Spotify & YouTube support</span>
+                    </li>
+                  </ul>
+                  <Link href="/register" className="mt-8 block">
+                    <Button variant="outline" className="w-full border-gray-300">Get Started Free</Button>
+                  </Link>
+                </CardContent>
+              </Card>
+
+              {/* Pro Tier */}
+              <Card className="flex flex-col border-primary shadow-lg relative bg-white overflow-hidden">
+                <div className="absolute top-0 inset-x-0 h-1 bg-primary"></div>
+                <div className="p-8 pb-0">
+                  <div className="inline-block bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider mb-2">Popular</div>
+                  <h3 className="text-2xl font-bold flex items-center">
+                    Pro <Zap className="w-5 h-5 ml-2 text-amber-500 fill-amber-500" />
+                  </h3>
+                  <p className="text-gray-500 text-sm mt-1">For audiophiles with massive music libraries.</p>
+                  <div className="mt-4">
+                    <span className="text-4xl font-extrabold text-gray-900">₹4.99</span>
+                    <span className="text-gray-500 font-medium">/month</span>
+                  </div>
+                </div>
+                <CardContent className="p-8 flex-1">
+                  <ul className="space-y-4">
+                    <li className="flex items-start">
+                      <CheckCircle2 className="w-5 h-5 text-primary mr-2 shrink-0 mt-0.5" />
+                      <span className="text-gray-900 font-medium">Unlimited tracks</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle2 className="w-5 h-5 text-primary mr-2 shrink-0 mt-0.5" />
+                      <span className="text-gray-600">Levenshtein AI matching</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle2 className="w-5 h-5 text-primary mr-2 shrink-0 mt-0.5" />
+                      <span className="text-gray-600">Priority support</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle2 className="w-5 h-5 text-primary mr-2 shrink-0 mt-0.5" />
+                      <span className="text-gray-600">Real-time status tracking</span>
+                    </li>
+                  </ul>
+                  <Link href="/register" className="mt-8 block">
+                    <Button className="w-full shadow-md">Upgrade to Pro</Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
+
         {/* CTA Section */}
-        <section className="w-full py-24 bg-white">
+        <section className="w-full py-24 bg-gray-50 border-t border-gray-100">
           <div className="container px-4 md:px-6 mx-auto max-w-4xl text-center">
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl mb-6">Ready to unify your audio?</h2>
             <p className="text-xl text-gray-600 mb-10">Join thousands of users who have successfully migrated their extensive music libraries using PlaySync.</p>
