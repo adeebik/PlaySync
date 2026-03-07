@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
 const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID
-const REDIRECT_URI = `http://127.0.0.1:3000/api/spotify/callback`
+const REDIRECT_URI = `${process.env.NEXT_PUBLIC_SITE_URL}/api/spotify/callback`
 const SCOPES = [
   'user-read-private',
   'user-read-email',

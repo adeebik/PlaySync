@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
-const REDIRECT_URI = `http://127.0.0.1:3000/api/youtube/callback`
+const REDIRECT_URI = `${process.env.NEXT_PUBLIC_SITE_URL}/api/youtube/callback`
 
 // For YouTube Data API v3 scope requirements
 const SCOPES = [
