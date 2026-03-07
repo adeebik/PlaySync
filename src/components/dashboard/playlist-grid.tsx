@@ -64,10 +64,21 @@ export function PlaylistGrid({ platform, onSelect }: PlaylistGridProps) {
   }
 
   if (error) {
+    const handleReconnect = () => {
+      window.location.href = `/api/${platform}/auth`
+    }
+
     return (
-      <div className="text-center p-8 mt-4 bg-red-50 text-red-600 rounded-lg">
-        <p className="font-medium">Error loading playlists</p>
-        <p className="text-sm mt-1">{error}</p>
+      <div className="text-center p-8 mt-4 bg-red-50 text-red-600 rounded-lg border border-red-100 flex flex-col items-center">
+        <p className="font-medium text-lg">Error loading playlists</p>
+        <p className="text-sm mt-1 mb-4 opacity-80">{error}</p>
+        <Button 
+          variant="outline" 
+          className="bg-white border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 font-semibold"
+          onClick={handleReconnect}
+        >
+          Reconnect {platform.charAt(0).toUpperCase() + platform.slice(1)}
+        </Button>
       </div>
     )
   }
