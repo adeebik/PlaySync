@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { encrypt } from '@/lib/utils/encryption'
 
 const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID
@@ -20,11 +21,11 @@ export async function GET(request: Request) {
   const supabase = await createClient()
 
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
+    data: { user },
+  } = await supabase.auth.getUser()
 
   // Failsafe: session must exist.
-  if (!session) {
+  if (!user) {
     return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/login?error=SessionExpired`)
   }
 
@@ -63,16 +64,28 @@ export async function GET(request: Request) {
     
     const userData = await userResponse.json()
 
-    // Map token properties
     const accessToken = encrypt(tokenData.access_token)
     const refreshToken = tokenData.refresh_token ? encrypt(tokenData.refresh_token) : null
     const tokenExpiry = new Date(Date.now() + tokenData.expires_in * 1000)
+
+    // Ensure the user_profiles row exists to satisfy the foreign key constraint
+    // We must use the Service Role key to bypass Row Level Security (RLS) policies 
+    const adminClient = createAdminClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
+    
+    await adminClient.from('user_profiles').upsert({
+      id: user.id,
+      email: user.email,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'id' })
 
     // UPSERT directly into the public.connected_accounts table!
     const { error: dbError } = await supabase
       .from('connected_accounts')
       .upsert({
-        user_id: session.user.id,
+        user_id: user.id,
         platform: 'spotify',
         access_token: accessToken,
         refresh_token: refreshToken,

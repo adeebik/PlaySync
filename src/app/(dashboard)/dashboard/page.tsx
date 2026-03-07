@@ -157,10 +157,6 @@ export default async function DashboardPage() {
            <PlatformConnect 
              isSpotifyConnected={isSpotifyConnected} 
              isYouTubeConnected={isYouTubeConnected} 
-             onPlaylistSelect={(p) => {
-               // To be chained to the Core Transfer Modal later
-               console.log("Selected Source Playlist: ", p)
-             }} 
            />
         )}
       </main>

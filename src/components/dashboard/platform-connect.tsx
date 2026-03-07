@@ -10,7 +10,7 @@ import { Music, PlayCircle } from 'lucide-react'
 interface PlatformConnectProps {
   isSpotifyConnected: boolean
   isYouTubeConnected: boolean
-  onPlaylistSelect: (playlist: Playlist) => void
+  onPlaylistSelect?: (playlist: Playlist) => void
 }
 
 export function PlatformConnect({ isSpotifyConnected, isYouTubeConnected, onPlaylistSelect }: PlatformConnectProps) {
