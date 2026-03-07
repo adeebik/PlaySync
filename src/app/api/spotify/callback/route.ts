@@ -4,7 +4,7 @@ import { encrypt } from '@/lib/utils/encryption'
 
 const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID
 const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET
-const REDIRECT_URI = `${process.env.NEXT_PUBLIC_SITE_URL}/api/spotify/callback`
+const REDIRECT_URI = `http://127.0.0.1:3000/api/spotify/callback`
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)

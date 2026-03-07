@@ -4,7 +4,7 @@ import { encrypt } from '@/lib/utils/encryption'
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
-const REDIRECT_URI = `${process.env.NEXT_PUBLIC_SITE_URL}/api/youtube/callback`
+const REDIRECT_URI = `http://127.0.0.1:3000/api/youtube/callback`
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
