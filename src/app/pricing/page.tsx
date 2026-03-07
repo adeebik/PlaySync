@@ -11,29 +11,68 @@ export default function PricingPage() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   
-  // NOTE: In production, replace this with your actual Stripe Price ID from your Dashboard
-  const PRO_PRICE_ID = process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID || 'price_1234567890'
+  // Replace with your Razorpay Key ID
+  const RAZORPAY_KEY_ID = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || ''
 
   const handleSubscribe = async () => {
     setLoading(true)
     try {
-      const response = await fetch('/api/stripe/checkout', {
+      // 1. Create Order on Backend
+      const response = await fetch('/api/razorpay/order', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ priceId: PRO_PRICE_ID }),
       })
-      const data = await response.json()
+      const order = await response.json()
       
-      if (data.url) {
-        window.location.href = data.url
-      } else if (data.error === 'Unauthorized') {
+      if (order.error === 'Unauthorized') {
         router.push('/login?next=/pricing')
-      } else {
-        console.error('Checkout error:', data.error)
+        return
+      }
+
+      if (!order.orderId) {
+        throw new Error('Failed to create order')
+      }
+
+      // 2. Load Razorpay Script
+      const script = document.createElement('script')
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+      script.async = true
+      
+      script.onload = () => {
+        const options = {
+          key: RAZORPAY_KEY_ID || order.key,
+          amount: order.amount,
+          currency: order.currency,
+          name: 'PlaySync',
+          description: 'Pro Upgrade',
+          order_id: order.orderId,
+          handler: function (response: any) {
+            // Payment success! Redirect or show status
+            router.push('/dashboard?success=subscription_created')
+          },
+          prefill: {
+            name: '',
+            email: '',
+          },
+          theme: {
+            color: '#3B82F6', // primary blue
+          },
+        }
+
+        const rzp = new (window as any).Razorpay(options)
+        rzp.open()
         setLoading(false)
       }
+
+      script.onerror = () => {
+        console.error('Failed to load Razorpay script')
+        setLoading(false)
+      }
+
+      document.body.appendChild(script)
+
     } catch (error) {
       console.error('Failed to initiate checkout', error)
       setLoading(false)

@@ -15,7 +15,8 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { sourcePlatform, targetPlatform, sourcePlaylistId, sourcePlaylistName } = await request.json()
+    const body = await request.json()
+    const { sourcePlatform, targetPlatform, sourcePlaylistId, sourcePlaylistName, tracksCount } = body
 
     if (!sourcePlatform || !targetPlatform || !sourcePlaylistId || !sourcePlaylistName) {
       return NextResponse.json({ error: 'Missing required transfer parameters' }, { status: 400 })
@@ -25,7 +26,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Currently, only Spotify -> YouTube transfers are supported.' }, { status: 400 })
     }
 
-    const playlistTrackCount = await request.json().then(data => data.tracksCount || 0).catch(() => 0)
+    const playlistTrackCount = tracksCount || 0
 
     // --- PAYWALL LOGIC ---
     // 1. Check if the user has an active Pro subscription
